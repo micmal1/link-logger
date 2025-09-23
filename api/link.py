@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler
 import requests
 import json
 
-WEBHOOK_URL = "https://discord.com/api/webhooks/XXXXXX/XXXXXX"
+WEBHOOK_URL = "https://discord.com/api/webhooks/1418597405871439933/8YsY9-WYZfq19AHicu8ua8ZPWgVxS1_I-4CiQ-LtZLS5HtzPfHOW8dpBwdrh84Pm80NR"
 
 def get_public_ip():
     try:
