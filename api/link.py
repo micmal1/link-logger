@@ -1,4 +1,8 @@
+from http.server import BaseHTTPRequestHandler
 import requests
+import json
+
+WEBHOOK_URL = "https://discord.com/api/webhooks/XXXXXX/XXXXXX"
 
 def get_public_ip():
     try:
@@ -6,18 +10,21 @@ def get_public_ip():
         resp.raise_for_status()
         return resp.json().get("ip")
     except Exception as e:
-        raise RuntimeError(f"Nie udało się pobrać IP: {e}")
-
-if __name__ == "__main__":
-    ip = get_public_ip()
-    
-
-WEBHOOK_URL = "https://discord.com/api/webhooks/1418597405871439933/8YsY9-WYZfq19AHicu8ua8ZPWgVxS1_I-4CiQ-LtZLS5HtzPfHOW8dpBwdrh84Pm80NR"
+        return f"error: {e}"
 
 def send_message(content: str):
     data = {"content": content}
-    resp = requests.post(WEBHOOK_URL, json=data)
-    
+    try:
+        requests.post(WEBHOOK_URL, json=data, timeout=5)
+    except Exception:
+        pass
 
-if __name__ == "__main__":
-    send_message('IP recived: ', ip)
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        ip = get_public_ip()
+        send_message(f"IP received: {ip}")
+
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps({"ip": ip}).encode("utf-8"))
