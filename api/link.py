@@ -1,8 +1,10 @@
 from http.server import BaseHTTPRequestHandler
 import requests
 import json
+import os
 
-WEBHOOK_URL = "https://discord.com/api/webhooks/1418597405871439933/8YsY9-WYZfq19AHicu8ua8ZPWgVxS1_I-4CiQ-LtZLS5HtzPfHOW8dpBwdrh84Pm80NR"
+# pobierz webhook z ENV (w Vercelu ustaw w Settings > Environment Variables)
+WEBHOOK_URL = os.environ.get("https://discord.com/api/webhooks/1418597405871439933/8YsY9-WYZfq19AHicu8ua8ZPWgVxS1_I-4CiQ-LtZLS5HtzPfHOW8dpBwdrh84Pm80NR")
 
 def get_public_ip():
     try:
@@ -13,11 +15,12 @@ def get_public_ip():
         return f"error: {e}"
 
 def send_message(content: str):
-    data = {"content": content}
+    if not WEBHOOK_URL:
+        return
     try:
-        requests.post(WEBHOOK_URL, json=data, timeout=5)
-    except Exception:
-        pass
+        requests.post(WEBHOOK_URL, json={"content": content}, timeout=5)
+    except Exception as e:
+        print("Błąd wysyłania do webhooka:", e)
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
